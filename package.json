@@ -8,7 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "test:payments": "node --conditions=react-server --import tsx --test tests/paymentStore.test.ts"
+    "test:payments": "node --conditions=react-server --import tsx --test tests/paymentStore.test.ts",
+    "stripe:setup-local": "node scripts/configure-stripe-local.mjs",
+    "stripe:verify": "node scripts/verify-stripe-setup.mjs",
+    "stripe:listen": "stripe listen --events payment_intent.succeeded,payment_intent.payment_failed,payment_intent.canceled,refund.created,refund.updated,refund.failed,account.updated,transfer.created,transfer.updated,transfer.reversed --forward-to http://localhost:3000/api/stripe/webhook"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",

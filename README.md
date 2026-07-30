@@ -95,6 +95,18 @@ webhook testing, forward Stripe events to:
 http://localhost:3000/api/stripe/webhook
 ```
 
+With an authenticated Stripe CLI, the repository can configure and verify the
+local test environment without printing secrets:
+
+```bash
+npm run stripe:setup-local
+npm run stripe:verify
+npm run stripe:listen
+```
+
+The CLI login creates an expiring restricted test key. Re-run `stripe login`
+and `npm run stripe:setup-local` when that credential expires.
+
 Local payment state is stored in `.data/solid-payments.sqlite`. This is suitable
 for a single-process hackathon demo. Use managed Postgres before deploying to a
 serverless or multi-instance environment.
