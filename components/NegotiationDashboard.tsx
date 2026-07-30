@@ -61,7 +61,7 @@ export function NegotiationDashboard({
               Scam detected — negotiation with {scammedNeg.sellerName} stopped
             </p>
             <p className="mt-0.5 text-xs text-red-600">
-              MRI identified scam indicators and automatically halted this deal to protect you.
+              SOLID identified scam indicators and automatically halted this deal to protect you.
               {scammedNeg.scamAlert?.flags?.[0] ? ` Reason: ${scammedNeg.scamAlert.flags[0]}.` : ""}
             </p>
           </div>
@@ -79,7 +79,7 @@ export function NegotiationDashboard({
         <p className="text-xs font-medium uppercase tracking-widest text-ink/40">Step 3</p>
         <h2 className="mt-2 text-2xl font-light tracking-tight text-ink">Negotiations</h2>
         <p className="mt-1 text-sm text-ink/50">
-          MRI is simulating negotiations against the live listings you selected.
+          SOLID is simulating negotiations against the live listings you selected.
           Not messaging real sellers.
         </p>
       </div>

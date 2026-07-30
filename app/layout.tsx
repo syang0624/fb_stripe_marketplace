@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "MRI — Market Research Intelligence",
+  title: "SOLID — Safe marketplace deals",
   description: "AI-powered marketplace deal finder and negotiation assistant"
 };
 

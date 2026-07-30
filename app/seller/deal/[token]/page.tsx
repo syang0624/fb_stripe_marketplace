@@ -91,7 +91,7 @@ export default function SellerDealPage() {
     <main className="min-h-screen bg-paper">
       <header className="border-b border-line">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <span className="text-base font-semibold tracking-tight text-ink">MRI</span>
+          <span className="text-base font-semibold tracking-tight text-ink">SOLID</span>
           <span className="text-xs font-medium uppercase tracking-widest text-ink/40">
             Seller view
           </span>

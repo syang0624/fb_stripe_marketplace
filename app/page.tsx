@@ -696,7 +696,7 @@ export default function HomePage() {
       {/* Top bar */}
       <header className="border-b border-line">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <span className="text-base font-semibold tracking-tight text-ink">MRI</span>
+          <span className="text-base font-semibold tracking-tight text-ink">SOLID</span>
           <nav className="flex items-center gap-1">
             {navItems.map((s, i) => (
               <div key={s.key} className="flex items-center gap-1">

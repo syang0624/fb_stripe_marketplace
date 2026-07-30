@@ -46,7 +46,7 @@ export function NegotiationLane({ negotiation, onViewChat, onTakeOver }: Negotia
         {/* Big scam alert */}
         <div className="rounded-lg bg-red-100 px-4 py-3">
           <p className="text-sm font-semibold text-red-800">
-            MRI stopped this negotiation
+            SOLID stopped this negotiation
           </p>
           <p className="mt-1 text-xs leading-relaxed text-red-700">
             {scamAlert?.summary ?? "Scam indicators detected. Negotiation halted to protect you."}

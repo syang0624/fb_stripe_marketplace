@@ -32,7 +32,7 @@ export function OnboardingChat({ onComplete }: OnboardingChatProps) {
     {
       role: "seller",
       content:
-        "Hey! I'm MRI, your buying agent. I'll find the best deals on the marketplace and negotiate for you. What are you looking for?",
+        "Hey! I'm SOLID, your buying agent. I'll find the best deals on the marketplace and negotiate for you. What are you looking for?",
       timestamp: Date.now(),
     },
   ]);
@@ -115,7 +115,7 @@ export function OnboardingChat({ onComplete }: OnboardingChatProps) {
           Tell us what you want
         </h2>
         <p className="mt-1 text-sm text-ink/50">
-          Chat with MRI — it just needs a few details to start searching.
+          Chat with SOLID — it just needs a few details to start searching.
         </p>
       </div>
 
@@ -127,7 +127,7 @@ export function OnboardingChat({ onComplete }: OnboardingChatProps) {
             role={message.role}
             content={message.content}
             timestamp={message.timestamp}
-            sellerLabel="MRI"
+            sellerLabel="SOLID"
           />
         ))}
         {loading && (

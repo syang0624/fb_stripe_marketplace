@@ -130,9 +130,9 @@ export function ChatDrawer({
           <div className="border-t border-line px-6 py-4">
             <p className="text-center text-xs text-ink/40">
               {negotiation.stage === "scam_detected"
-                ? "MRI stopped this negotiation due to scam indicators."
+                ? "SOLID stopped this negotiation due to scam indicators."
                 : negotiation.stage === "withdrawn"
-                  ? "MRI walked away from this negotiation."
+                  ? "SOLID walked away from this negotiation."
                   : "Negotiation complete — viewing chat history."}
             </p>
           </div>
@@ -158,7 +158,7 @@ export function ChatDrawer({
                   onClick={onReturnControl}
                   className="w-full rounded-md border border-line px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-mist"
                 >
-                  Return control to MRI
+                  Return control to SOLID
                 </button>
               </>
             ) : (
