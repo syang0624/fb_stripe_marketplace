@@ -25,6 +25,7 @@ import {
   Negotiation,
   SellerPersona,
 } from "@/lib/types";
+import { registerAgentFinalOffer } from "@/lib/server/trustedOffers";
 
 interface ChatRequestBody {
   mode: ChatMode;
@@ -117,7 +118,8 @@ export async function POST(req: Request) {
   const temperature = mode === "seller" || mode === "persona_from_listing" ? 0.7 : 0.2;
 
   if (!client) {
-    return Response.json({ reply: fallbackReply(mode, context, messages) });
+    const reply = fallbackReply(mode, context, messages);
+    return responseWithTrustedOffer(mode, reply, context);
   }
 
   try {
@@ -131,10 +133,31 @@ export async function POST(req: Request) {
       ],
     });
     const text = response.choices[0]?.message?.content || "";
-    return Response.json({ reply: text });
+    return responseWithTrustedOffer(mode, text, context);
   } catch (err) {
     console.error("[/api/chat] GMI call failed, using fallback:", err);
-    return Response.json({ reply: fallbackReply(mode, context, messages) });
+    const reply = fallbackReply(mode, context, messages);
+    return responseWithTrustedOffer(mode, reply, context);
+  }
+}
+
+function responseWithTrustedOffer(
+  mode: ChatMode,
+  reply: string,
+  context?: ChatRequestBody["context"]
+) {
+  if (mode !== "agent_turn") return Response.json({ reply });
+
+  try {
+    const offer = registerAgentFinalOffer(
+      reply,
+      context?.negotiation,
+      context?.profile
+    );
+    return Response.json({ reply, offerId: offer?.id });
+  } catch (error) {
+    console.error("[/api/chat] Could not register final offer:", error);
+    return Response.json({ reply });
   }
 }
 

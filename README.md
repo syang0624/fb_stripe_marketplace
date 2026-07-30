@@ -69,6 +69,36 @@ npm run typecheck
 npm run build
 ```
 
+Payment backend checks:
+
+```bash
+npm run test:payments
+```
+
+## Stripe Connect Demo Backend
+
+The `nori` branch adds the server-side trusted meetup payment flow described in
+`STRIPE-CONNECT-PRD.md`:
+
+- the AI chat route registers a server-trusted final offer
+- the buyer creates a transaction and Stripe PaymentIntent
+- the seller completes Stripe-hosted Connect onboarding
+- buyer and seller confirmations are stored separately
+- the second confirmation creates a Connect Transfer
+- either party can cancel first and trigger a full Refund
+- Stripe webhooks are signature-verified and idempotently reconciled
+
+Copy the Stripe variables from `.env.example` into `.env.local`. For local
+webhook testing, forward Stripe events to:
+
+```text
+http://localhost:3000/api/stripe/webhook
+```
+
+Local payment state is stored in `.data/solid-payments.sqlite`. This is suitable
+for a single-process hackathon demo. Use managed Postgres before deploying to a
+serverless or multi-instance environment.
+
 `npm run lint` is defined, but this repo uses Next 15 with the older `next lint` script shape, so verify the lint setup before relying on it in CI.
 
 ## RunPod / Vision Work
