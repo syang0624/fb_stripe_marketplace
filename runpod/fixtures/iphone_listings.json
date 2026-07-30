@@ -1,0 +1,44 @@
+[
+  {
+    "url": "https://www.facebook.com/marketplace/item/1000000000000001",
+    "name": "iPhone 13 128GB Blue - Good Condition",
+    "final_price": 380,
+    "initial_price": 420,
+    "currency": "USD",
+    "condition": "Used - Good",
+    "description": "iPhone 13, 128GB, battery health 89%. Small scratch on the back. Comes with charger.",
+    "seller": {"name": "Alex M."},
+    "location": "San Francisco, CA",
+    "images": [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/IPhone%20models.jpg"
+    ]
+  },
+  {
+    "url": "https://www.facebook.com/marketplace/item/1000000000000002",
+    "name": "iPhone 12 Pro 256GB - Cracked Screen",
+    "final_price": 250,
+    "initial_price": 300,
+    "currency": "USD",
+    "condition": "Used - Fair",
+    "description": "iPhone 12 Pro, screen is cracked but fully functional. Face ID works.",
+    "seller": {"name": "Jordan P."},
+    "location": "Oakland, CA",
+    "images": [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/Cracked%20iPhone.jpg"
+    ]
+  },
+  {
+    "url": "https://www.facebook.com/marketplace/item/1000000000000003",
+    "name": "iPhone 14 128GB Midnight - Like New",
+    "final_price": 560,
+    "initial_price": 560,
+    "currency": "USD",
+    "condition": "Used - Like New",
+    "description": "iPhone 14, barely used, no scratches. Original box included.",
+    "seller": {"name": "Sam R."},
+    "location": "Berkeley, CA",
+    "images": [
+      "https://commons.wikimedia.org/wiki/Special:FilePath/IPhone%205.png"
+    ]
+  }
+]

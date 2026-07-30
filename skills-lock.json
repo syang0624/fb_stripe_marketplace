@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "flash": {
+      "source": "runpod/skills",
+      "sourceType": "github",
+      "skillPath": "flash/SKILL.md",
+      "computedHash": "4f52fd8434d1ddff088b8923a1bc744dcb3d2e06f74509e2ad0336ad9128a947"
+    }
+  }
+}
