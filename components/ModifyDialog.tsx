@@ -25,12 +25,12 @@ export function ModifyDialog({
   const [newPrice, setNewPrice] = useState(Math.round(offer.finalPrice * 0.9));
 
   const inputClass =
-    "w-full rounded-md border border-line bg-paper px-3 py-2 text-sm text-ink outline-none transition-colors focus:border-ink/30";
+    "w-full rounded-md border border-line bg-paper px-3 py-2 text-sm text-ink outline-none transition-colors focus:border-fb";
   const labelClass = "mb-1.5 block text-xs font-medium text-ink/50";
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/20 p-4 animate-fadeIn">
-      <div className="w-full max-w-sm overflow-hidden rounded-lg border border-line bg-paper shadow-card">
+      <div className="w-full max-w-sm overflow-hidden rounded-lg bg-paper shadow-card">
         {/* Header */}
         <div className="flex items-center justify-between px-6 pt-5">
           <h3 className="text-sm font-medium text-ink">Modify offer</h3>
@@ -82,7 +82,7 @@ export function ModifyDialog({
                   onModifyLogistics(meetTime, meetPlace);
                   onClose();
                 }}
-                className="w-full rounded-md bg-ink px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-ink/90"
+                className="w-full rounded-md bg-fb px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-fbdark"
               >
                 Update meet details
               </button>
@@ -91,7 +91,7 @@ export function ModifyDialog({
             <>
               <div>
                 <label className={labelClass}>Current agreed price</label>
-                <p className="text-xl font-light tracking-tight text-ink">${offer.finalPrice}</p>
+                <p className="text-xl font-semibold tracking-tight text-ink">${offer.finalPrice}</p>
               </div>
               <div>
                 <label className={labelClass}>New target price</label>
@@ -110,7 +110,7 @@ export function ModifyDialog({
                   onModifyPrice(newPrice);
                   onClose();
                 }}
-                className="w-full rounded-md bg-ink px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-ink/90"
+                className="w-full rounded-md bg-fb px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-fbdark"
               >
                 Reopen at ${newPrice}
               </button>

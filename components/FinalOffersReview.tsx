@@ -38,7 +38,7 @@ export function FinalOffersReview({
     <div className="mx-auto max-w-6xl px-6 py-4">
       <div className="mb-10">
         <p className="text-xs font-medium uppercase tracking-widest text-ink/40">Step 4</p>
-        <h2 className="mt-2 text-2xl font-light tracking-tight text-ink">Final offers</h2>
+        <h2 className="mt-2 text-2xl font-semibold tracking-tight text-ink">Final offers</h2>
         <p className="mt-1 text-sm text-ink/50">Review your deals. Accept, modify, or decline.</p>
       </div>
 
@@ -53,7 +53,7 @@ export function FinalOffersReview({
           return (
             <article
               key={neg.sellerId}
-              className="flex flex-col overflow-hidden rounded-lg border border-line bg-paper"
+              className="flex flex-col overflow-hidden rounded-lg bg-paper shadow-card"
             >
               {/* Image */}
               <div className="relative h-36 w-full bg-mist">
@@ -70,7 +70,7 @@ export function FinalOffersReview({
 
                 {/* Price */}
                 <div className="flex items-baseline gap-2">
-                  <span className="text-2xl font-light tracking-tight text-ink">
+                  <span className="text-2xl font-semibold tracking-tight text-ink">
                     ${offer.finalPrice}
                   </span>
                   <span className="text-xs text-ink/35 line-through">${neg.listing.price}</span>
@@ -109,19 +109,19 @@ export function FinalOffersReview({
                   <div className="flex gap-2">
                     <button
                       onClick={() => onAccept(neg)}
-                      className="flex-1 rounded-md bg-ink px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-ink/90"
+                      className="flex-1 rounded-md bg-fb px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-fbdark"
                     >
                       Accept &amp; pay
                     </button>
                     <button
                       onClick={() => setModifyingSellerId(neg.sellerId)}
-                      className="flex-1 rounded-md border border-line px-3 py-2 text-xs font-medium text-ink transition-colors hover:bg-mist"
+                      className="flex-1 rounded-md bg-steel px-3 py-2 text-xs font-medium text-ink transition-colors hover:bg-line"
                     >
                       Modify
                     </button>
                     <button
                       onClick={() => onDecline(neg)}
-                      className="flex-1 rounded-md border border-line px-3 py-2 text-xs font-medium text-ink/60 transition-colors hover:text-critical"
+                      className="flex-1 rounded-md bg-steel px-3 py-2 text-xs font-medium text-ink/60 transition-colors hover:text-critical"
                     >
                       Decline
                     </button>

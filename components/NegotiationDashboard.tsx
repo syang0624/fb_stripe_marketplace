@@ -77,7 +77,7 @@ export function NegotiationDashboard({
       {/* Header */}
       <div className="mb-10">
         <p className="text-xs font-medium uppercase tracking-widest text-ink/40">Step 3</p>
-        <h2 className="mt-2 text-2xl font-light tracking-tight text-ink">Negotiations</h2>
+        <h2 className="mt-2 text-2xl font-semibold tracking-tight text-ink">Negotiations</h2>
         <p className="mt-1 text-sm text-ink/50">
           SOLID is simulating negotiations against the live listings you selected.
           Not messaging real sellers.

@@ -111,7 +111,7 @@ export function OnboardingChat({ onComplete }: OnboardingChatProps) {
       {/* Header */}
       <div className="px-1 pb-6">
         <p className="text-xs font-medium uppercase tracking-widest text-ink/40">Step 1</p>
-        <h2 className="mt-2 text-2xl font-light tracking-tight text-ink">
+        <h2 className="mt-2 text-2xl font-semibold tracking-tight text-ink">
           Tell us what you want
         </h2>
         <p className="mt-1 text-sm text-ink/50">
@@ -120,7 +120,7 @@ export function OnboardingChat({ onComplete }: OnboardingChatProps) {
       </div>
 
       {/* Messages */}
-      <div className="flex-1 space-y-4 overflow-y-auto rounded-lg border border-line bg-paper p-5">
+      <div className="flex-1 space-y-4 overflow-y-auto rounded-lg bg-paper shadow-card p-5">
         {messages.map((message, index) => (
           <ChatBubble
             key={`${message.timestamp}-${index}`}
@@ -146,13 +146,13 @@ export function OnboardingChat({ onComplete }: OnboardingChatProps) {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type a message..."
-          className="flex-1 rounded-md border border-line bg-paper px-4 py-3 text-sm text-ink placeholder:text-ink/35 outline-none transition-colors focus:border-ink/30"
+          className="flex-1 rounded-md border border-line bg-paper px-4 py-3 text-sm text-ink placeholder:text-ink/35 outline-none transition-colors focus:border-fb"
           autoFocus
         />
         <button
           type="submit"
           disabled={loading}
-          className="rounded-md bg-ink px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-ink/90 disabled:opacity-40"
+          className="rounded-md bg-fb px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-fbdark disabled:opacity-40"
         >
           Send
         </button>

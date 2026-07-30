@@ -1,8 +1,8 @@
 import type { Config } from "tailwindcss";
 
-// Stripe-inspired minimalist (Swiss) design system.
-// Monochrome base + restrained status accents. Negative space and typographic
-// hierarchy carry the structure; borders/shadows are used sparingly.
+// Facebook Marketplace-inspired design system.
+// Gray canvas (#F0F2F5) with white cards, Facebook blue for primary actions,
+// system font stack, and FB's neutral/status palette.
 const config: Config = {
   content: [
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
@@ -12,32 +12,40 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        paper: "#FFFFFF",
-        ink: "#111111",
-        mist: "#F5F5F7",
-        line: "#E5E5E5",
-        // Restrained status accents — used only for small text/dots.
-        positive: "#067647",
-        critical: "#B42318",
-        // Back-compat aliases so any stray legacy class still resolves to ink/mist.
-        primary: "#111111",
-        secondary: "#F5F5F7"
+        paper: "#FFFFFF", // card surface
+        ink: "#050505", // primary text
+        mist: "#F0F2F5", // page background / subtle fills
+        steel: "#E4E6EB", // secondary buttons / neutral chips
+        line: "#DADDE1", // dividers
+        fb: "#1877F2", // Facebook blue — primary actions
+        fbdark: "#166FE5", // primary action hover
+        positive: "#31A24C",
+        critical: "#FA383E",
+        // Back-compat aliases so any stray legacy class still resolves.
+        primary: "#1877F2",
+        secondary: "#E4E6EB"
       },
       fontFamily: {
-        sans: ["Inter", "system-ui", "sans-serif"],
-        heading: ["Inter", "system-ui", "sans-serif"],
-        body: ["Inter", "system-ui", "sans-serif"],
-        mono: ["Inter", "system-ui", "sans-serif"]
+        sans: [
+          "Segoe UI",
+          "Helvetica Neue",
+          "Helvetica",
+          "Arial",
+          "system-ui",
+          "sans-serif"
+        ],
+        heading: ["Segoe UI", "Helvetica Neue", "Helvetica", "Arial", "system-ui", "sans-serif"],
+        body: ["Segoe UI", "Helvetica Neue", "Helvetica", "Arial", "system-ui", "sans-serif"],
+        mono: ["ui-monospace", "SFMono-Regular", "Menlo", "monospace"]
       },
       borderRadius: {
-        DEFAULT: "6px",
-        md: "6px",
-        lg: "8px"
+        DEFAULT: "8px",
+        md: "8px",
+        lg: "10px"
       },
       boxShadow: {
-        // Max 4px blur, very low opacity. No large/offset shadows.
-        sm: "0px 1px 2px rgba(0,0,0,0.04)",
-        card: "0px 2px 4px rgba(0,0,0,0.05)"
+        sm: "0 1px 2px rgba(0,0,0,0.1)",
+        card: "0 1px 2px rgba(0,0,0,0.2)"
       },
       keyframes: {
         fadeIn: {

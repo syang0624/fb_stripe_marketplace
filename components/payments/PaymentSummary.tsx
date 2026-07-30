@@ -22,9 +22,9 @@ export function PaymentSummary({ negotiation, busy, onConfirm, onBack }: Payment
   return (
     <div className="mx-auto max-w-lg px-6 animate-fadeIn">
       <p className="text-xs font-medium uppercase tracking-widest text-ink/40">Payment</p>
-      <h2 className="mt-2 text-2xl font-light tracking-tight text-ink">Review & pay</h2>
+      <h2 className="mt-2 text-2xl font-semibold tracking-tight text-ink">Review & pay</h2>
 
-      <div className="mt-8 rounded-lg border border-line bg-paper p-6">
+      <div className="mt-8 rounded-lg bg-paper shadow-card p-6">
         <dl className="space-y-3 text-sm">
           <div className="flex justify-between gap-6">
             <dt className="text-ink/40">Item</dt>
@@ -47,7 +47,7 @@ export function PaymentSummary({ negotiation, busy, onConfirm, onBack }: Payment
         </dl>
         <div className="mt-5 flex items-baseline justify-between border-t border-line pt-5">
           <span className="text-sm text-ink/40">Agreed price</span>
-          <span className="text-3xl font-light tracking-tight text-ink">
+          <span className="text-3xl font-semibold tracking-tight text-ink">
             {formatUsd(Math.round(offer.finalPrice * 100))}
           </span>
         </div>
@@ -65,14 +65,14 @@ export function PaymentSummary({ negotiation, busy, onConfirm, onBack }: Payment
         <button
           onClick={onBack}
           disabled={busy}
-          className="flex-1 rounded-md border border-line px-4 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-mist disabled:opacity-50"
+          className="flex-1 rounded-md bg-steel px-4 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-line disabled:opacity-50"
         >
           Back to offers
         </button>
         <button
           onClick={onConfirm}
           disabled={busy}
-          className="flex-1 rounded-md bg-ink px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-ink/90 disabled:cursor-not-allowed disabled:opacity-50"
+          className="flex-1 rounded-md bg-fb px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-fbdark disabled:cursor-not-allowed disabled:opacity-50"
         >
           {busy ? "Setting up…" : "Continue to payment"}
         </button>

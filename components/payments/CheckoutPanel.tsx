@@ -31,10 +31,10 @@ export function CheckoutPanel({
   return (
     <div className="mx-auto max-w-lg px-6 animate-fadeIn">
       <p className="text-xs font-medium uppercase tracking-widest text-ink/40">Payment</p>
-      <h2 className="mt-2 text-2xl font-light tracking-tight text-ink">Secure checkout</h2>
+      <h2 className="mt-2 text-2xl font-semibold tracking-tight text-ink">Secure checkout</h2>
 
       {/* Order summary — server-derived values only */}
-      <div className="mt-8 rounded-lg border border-line bg-paper p-6">
+      <div className="mt-8 rounded-lg bg-paper shadow-card p-6">
         <div className="flex items-baseline justify-between gap-6">
           <div className="min-w-0">
             <p className="truncate text-sm font-medium text-ink">{transaction.listingTitle}</p>
@@ -42,7 +42,7 @@ export function CheckoutPanel({
               Seller: {transaction.sellerDisplayName}
             </p>
           </div>
-          <span className="text-2xl font-light tracking-tight text-ink">{amountLabel}</span>
+          <span className="text-2xl font-semibold tracking-tight text-ink">{amountLabel}</span>
         </div>
         <p className="mt-4 border-t border-line pt-4 text-xs leading-relaxed text-ink/50">
           Held securely until both you and the seller confirm the meetup. Full
@@ -59,7 +59,7 @@ export function CheckoutPanel({
         </div>
       )}
 
-      <div className="mt-6 rounded-lg border border-line bg-paper p-6">
+      <div className="mt-6 rounded-lg bg-paper shadow-card p-6">
         {clientSecret ? (
           <PaymentForm
             clientSecret={clientSecret}

@@ -19,7 +19,7 @@ export function DealCards({ deals, onSelect }: DealCardsProps) {
     <div className="mx-auto max-w-6xl px-6 py-4">
       <div className="mb-10">
         <p className="text-xs font-medium uppercase tracking-widest text-ink/40">Step 2</p>
-        <h2 className="mt-2 text-2xl font-light tracking-tight text-ink">Top deals for you</h2>
+        <h2 className="mt-2 text-2xl font-semibold tracking-tight text-ink">Top deals for you</h2>
         <p className="mt-1 text-sm text-ink/50">
           Ranked from your profile by value, fit, and risk.
         </p>
@@ -32,7 +32,7 @@ export function DealCards({ deals, onSelect }: DealCardsProps) {
           return (
             <article
               key={deal.listing.id}
-              className="flex flex-col overflow-hidden rounded-lg border border-line bg-paper transition-shadow hover:shadow-card"
+              className="flex flex-col overflow-hidden rounded-lg bg-paper shadow-card transition-shadow hover:shadow-md"
             >
               {/* Image */}
               <div className="relative h-44 w-full bg-mist">
@@ -59,7 +59,7 @@ export function DealCards({ deals, onSelect }: DealCardsProps) {
 
                 {/* Price */}
                 <div className="flex items-baseline gap-2">
-                  <span className="text-2xl font-light tracking-tight text-ink">
+                  <span className="text-2xl font-semibold tracking-tight text-ink">
                     ${deal.listing.price}
                   </span>
                   {deal.listing.fairValue > 0 && (
@@ -107,7 +107,7 @@ export function DealCards({ deals, onSelect }: DealCardsProps) {
                     <span className="tabular-nums text-ink">{deal.score}</span>
                   </div>
                   <div className="mt-1.5 h-1 w-full overflow-hidden rounded-full bg-line">
-                    <div className="h-full bg-ink" style={{ width: `${deal.score}%` }} />
+                    <div className="h-full bg-fb" style={{ width: `${deal.score}%` }} />
                   </div>
                 </div>
 
@@ -123,7 +123,7 @@ export function DealCards({ deals, onSelect }: DealCardsProps) {
                       href={deal.listing.link}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="font-medium text-ink hover:underline"
+                      className="font-medium text-fb hover:underline"
                     >
                       View ↗
                     </a>
@@ -138,7 +138,7 @@ export function DealCards({ deals, onSelect }: DealCardsProps) {
       <div className="mt-10">
         <button
           onClick={() => onSelect(deals)}
-          className="rounded-md bg-ink px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-ink/90"
+          className="rounded-md bg-fb px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-fbdark"
         >
           Negotiate all {deals.length}
         </button>

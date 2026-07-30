@@ -13,7 +13,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           attributes like data-gr-ext-installed onto <body> after SSR, causing a
           benign hydration attribute mismatch. */}
       <body
-        className="min-h-screen bg-paper font-sans text-ink antialiased"
+        className="min-h-screen bg-mist font-sans text-ink antialiased"
         suppressHydrationWarning
       >
         {children}
