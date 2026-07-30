@@ -88,10 +88,17 @@ export default function SellerDealPage() {
   };
 
   return (
-    <main className="min-h-screen bg-paper">
-      <header className="border-b border-line">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <span className="text-base font-semibold tracking-tight text-ink">MRI</span>
+    <main className="min-h-screen bg-mist">
+      <header className="border-b border-line bg-paper shadow-sm">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
+          <div className="flex items-center gap-2">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-fb text-base font-bold text-white">
+              S
+            </span>
+            <span className="text-xl font-bold tracking-tight text-ink">
+              SOLID <span className="font-normal text-ink/40">Marketplace</span>
+            </span>
+          </div>
           <span className="text-xs font-medium uppercase tracking-widest text-ink/40">
             Seller view
           </span>

@@ -17,7 +17,7 @@ export function SellerOnboardingCard({
 }: SellerOnboardingCardProps) {
   if (onboardingComplete) {
     return (
-      <div className="rounded-lg border border-line bg-paper p-5">
+      <div className="rounded-lg bg-paper shadow-card p-5">
         <p className="flex items-center gap-1.5 text-xs font-medium text-positive">
           <span className="h-1.5 w-1.5 rounded-full bg-positive" />
           Stripe payouts ready
@@ -31,7 +31,7 @@ export function SellerOnboardingCard({
   }
 
   return (
-    <div className="rounded-lg border border-line bg-paper p-5">
+    <div className="rounded-lg bg-paper shadow-card p-5">
       <p className="text-sm font-medium text-ink">Set up payouts</p>
       <p className="mt-1.5 text-xs leading-relaxed text-ink/50">
         Connect a Stripe account to receive this payment. You&apos;ll be taken to
@@ -41,7 +41,7 @@ export function SellerOnboardingCard({
       <button
         onClick={onStartOnboarding}
         disabled={busy}
-        className="mt-3 rounded-md bg-ink px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-ink/90 disabled:cursor-not-allowed disabled:opacity-50"
+        className="mt-3 rounded-md bg-fb px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-fbdark disabled:cursor-not-allowed disabled:opacity-50"
       >
         {busy ? "Opening Stripe…" : "Connect Stripe"}
       </button>

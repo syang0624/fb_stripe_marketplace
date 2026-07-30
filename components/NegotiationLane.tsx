@@ -46,7 +46,7 @@ export function NegotiationLane({ negotiation, onViewChat, onTakeOver }: Negotia
         {/* Big scam alert */}
         <div className="rounded-lg bg-red-100 px-4 py-3">
           <p className="text-sm font-semibold text-red-800">
-            MRI stopped this negotiation
+            SOLID stopped this negotiation
           </p>
           <p className="mt-1 text-xs leading-relaxed text-red-700">
             {scamAlert?.summary ?? "Scam indicators detected. Negotiation halted to protect you."}
@@ -65,7 +65,7 @@ export function NegotiationLane({ negotiation, onViewChat, onTakeOver }: Negotia
 
         {/* Price struck through */}
         <div className="flex items-baseline gap-2">
-          <span className="text-xl font-light tracking-tight text-red-400 line-through">${currentPrice}</span>
+          <span className="text-xl font-semibold tracking-tight text-red-400 line-through">${currentPrice}</span>
           <span className="text-xs font-medium text-red-600">Deal cancelled</span>
         </div>
 
@@ -81,7 +81,7 @@ export function NegotiationLane({ negotiation, onViewChat, onTakeOver }: Negotia
   }
 
   return (
-    <article className="flex flex-col gap-4 rounded-lg border border-line bg-paper p-5">
+    <article className="flex flex-col gap-4 rounded-lg bg-paper shadow-card p-5">
       {/* Header */}
       <div className="flex items-center gap-3">
         <ProductImage
@@ -113,7 +113,7 @@ export function NegotiationLane({ negotiation, onViewChat, onTakeOver }: Negotia
 
       {/* Price */}
       <div className="flex items-baseline gap-2">
-        <span className="text-xl font-light tracking-tight text-ink">${currentPrice}</span>
+        <span className="text-xl font-semibold tracking-tight text-ink">${currentPrice}</span>
         {savings > 0 && (
           <>
             <span className="text-xs text-ink/35 line-through">${listing.price}</span>
@@ -149,7 +149,7 @@ export function NegotiationLane({ negotiation, onViewChat, onTakeOver }: Negotia
       <div className="flex gap-2">
         <button
           onClick={onViewChat}
-          className="flex-1 rounded-md border border-line px-3 py-2 text-xs font-medium text-ink transition-colors hover:bg-mist"
+          className="flex-1 rounded-md bg-steel px-3 py-2 text-xs font-medium text-ink transition-colors hover:bg-line"
         >
           View chat
         </button>
@@ -157,7 +157,7 @@ export function NegotiationLane({ negotiation, onViewChat, onTakeOver }: Negotia
           onClick={onTakeOver}
           className={`flex-1 rounded-md px-3 py-2 text-xs font-medium transition-colors ${
             userTookOver
-              ? "bg-ink text-white hover:bg-ink/90"
+              ? "bg-fb text-white hover:bg-fbdark"
               : "border border-line text-ink hover:bg-mist"
           }`}
         >

@@ -12,7 +12,7 @@ import {
 
 // --- onboarding -------------------------------------------------------------
 
-export const ONBOARDING_PROMPT = `You are MRI (Market Research Intelligence), a practical buying agent that finds the best deals on used items and negotiates for the buyer in a simulated demo. You work for any kind of product, not just one category.
+export const ONBOARDING_PROMPT = `You are SOLID, a practical buying agent that finds the best deals on used items and negotiates for the buyer in a simulated demo. You work for any kind of product, not just one category.
 
 Collect ONLY these, ONE question at a time:
 1. What item they're looking for, plus any key specs (model, storage, color, condition) that matter
@@ -57,7 +57,7 @@ Map and derive fields as follows (never ask the buyer):
 
 // --- query_plan -------------------------------------------------------------
 
-export const queryPlannerPrompt = (profile: BuyerProfile) => `You are the search-planning brain of MRI.
+export const queryPlannerPrompt = (profile: BuyerProfile) => `You are the search-planning brain of SOLID.
 Convert the buyer profile into a Marketplace search plan.
 
 Generate 3-6 query variants. Do not just repeat the buyer's words.
@@ -84,7 +84,7 @@ Buyer profile: ${JSON.stringify(profile)}`;
 
 // --- normalize_listing ------------------------------------------------------
 
-export const normalizeListingPrompt = (rawListing: MarketplaceRawListing) => `You normalize a raw Facebook Marketplace listing into MRI's Listing shape.
+export const normalizeListingPrompt = (rawListing: MarketplaceRawListing) => `You normalize a raw Facebook Marketplace listing into SOLID's Listing shape.
 Extract a concise specs string and surface any risk flags (vague description, no photos, suspiciously low price, damage hints, iCloud lock, missing info).
 
 Return ONLY JSON:

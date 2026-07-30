@@ -692,11 +692,18 @@ export default function HomePage() {
     (paymentView === "checkout" || paymentView === "processing" || paymentView === "meetup");
 
   return (
-    <main className="min-h-screen bg-paper">
+    <main className="min-h-screen bg-mist">
       {/* Top bar */}
-      <header className="border-b border-line">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-          <span className="text-base font-semibold tracking-tight text-ink">MRI</span>
+      <header className="border-b border-line bg-paper shadow-sm">
+        <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-3">
+          <div className="flex items-center gap-2">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-fb text-base font-bold text-white">
+              S
+            </span>
+            <span className="text-xl font-bold tracking-tight text-ink">
+              SOLID <span className="font-normal text-ink/40">Marketplace</span>
+            </span>
+          </div>
           <nav className="flex items-center gap-1">
             {navItems.map((s, i) => (
               <div key={s.key} className="flex items-center gap-1">
@@ -785,7 +792,7 @@ export default function HomePage() {
               >
                 <button
                   onClick={handleStartNew}
-                  className="rounded-md border border-line px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-mist"
+                  className="rounded-md bg-steel px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-line"
                 >
                   Start a new search
                 </button>
@@ -802,7 +809,7 @@ export default function HomePage() {
                 >
                   <button
                     onClick={handleStartNew}
-                    className="rounded-md border border-line px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-mist"
+                    className="rounded-md bg-steel px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-line"
                   >
                     Start a new search
                   </button>
@@ -814,7 +821,7 @@ export default function HomePage() {
                 >
                   <button
                     onClick={handleStartNew}
-                    className="rounded-md border border-line px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-mist"
+                    className="rounded-md bg-steel px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-line"
                   >
                     Start a new search
                   </button>
@@ -839,14 +846,14 @@ export default function HomePage() {
                   {activeTx ? (
                     <button
                       onClick={polling.refresh}
-                      className="rounded-md border border-line px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-mist"
+                      className="rounded-md bg-steel px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-line"
                     >
                       Refresh status
                     </button>
                   ) : (
                     <button
                       onClick={handleBackToReview}
-                      className="rounded-md border border-line px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-mist"
+                      className="rounded-md bg-steel px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-line"
                     >
                       Back to offers
                     </button>

@@ -45,7 +45,7 @@ export function SearchProgress({ ready = false, onComplete }: SearchProgressProp
       <p className="text-xs font-medium uppercase tracking-widest text-ink/40">
         Live search · ScrapeCreators
       </p>
-      <h2 className="mt-3 text-2xl font-light tracking-tight text-ink">
+      <h2 className="mt-3 text-2xl font-semibold tracking-tight text-ink">
         {done ? "Found your top deals" : "Searching the marketplace"}
       </h2>
 

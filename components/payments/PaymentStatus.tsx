@@ -24,7 +24,7 @@ export function PaymentStatus({
     tone === "positive" ? "text-positive" : tone === "critical" ? "text-critical" : "text-ink";
 
   return (
-    <div className="rounded-lg border border-line bg-paper p-8 text-center animate-fadeIn">
+    <div className="rounded-lg bg-paper shadow-card p-8 text-center animate-fadeIn">
       {waiting && (
         <div className="mb-4 flex items-center justify-center gap-1.5">
           {[0, 1, 2].map((i) => (

@@ -130,9 +130,9 @@ export function ChatDrawer({
           <div className="border-t border-line px-6 py-4">
             <p className="text-center text-xs text-ink/40">
               {negotiation.stage === "scam_detected"
-                ? "MRI stopped this negotiation due to scam indicators."
+                ? "SOLID stopped this negotiation due to scam indicators."
                 : negotiation.stage === "withdrawn"
-                  ? "MRI walked away from this negotiation."
+                  ? "SOLID walked away from this negotiation."
                   : "Negotiation complete — viewing chat history."}
             </p>
           </div>
@@ -145,26 +145,26 @@ export function ChatDrawer({
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
                     placeholder="Type your message…"
-                    className="flex-1 rounded-md border border-line bg-paper px-3 py-2 text-sm text-ink placeholder:text-ink/35 outline-none transition-colors focus:border-ink/30"
+                    className="flex-1 rounded-md border border-line bg-paper px-3 py-2 text-sm text-ink placeholder:text-ink/35 outline-none transition-colors focus:border-fb"
                   />
                   <button
                     type="submit"
-                    className="rounded-md bg-ink px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-ink/90"
+                    className="rounded-md bg-fb px-4 py-2 text-xs font-medium text-white transition-colors hover:bg-fbdark"
                   >
                     Send
                   </button>
                 </form>
                 <button
                   onClick={onReturnControl}
-                  className="w-full rounded-md border border-line px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-mist"
+                  className="w-full rounded-md bg-steel px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-line"
                 >
-                  Return control to MRI
+                  Return control to SOLID
                 </button>
               </>
             ) : (
               <button
                 onClick={onTakeOver}
-                className="w-full rounded-md border border-line px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-mist"
+                className="w-full rounded-md bg-steel px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-line"
               >
                 Take over this negotiation
               </button>

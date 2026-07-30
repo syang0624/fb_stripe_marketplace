@@ -41,7 +41,7 @@ function MockPaymentForm({
   const [submitting, setSubmitting] = useState(false);
 
   const inputClass =
-    "w-full rounded-md border border-line bg-paper px-3 py-2 text-sm text-ink outline-none transition-colors focus:border-ink/30";
+    "w-full rounded-md border border-line bg-paper px-3 py-2 text-sm text-ink outline-none transition-colors focus:border-fb";
   const labelClass = "mb-1.5 block text-xs font-medium text-ink/50";
 
   const handleSubmit = async () => {
@@ -120,7 +120,7 @@ function MockPaymentForm({
       <button
         type="submit"
         disabled={submitting}
-        className="w-full rounded-md bg-ink px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-ink/90 disabled:cursor-not-allowed disabled:opacity-50"
+        className="w-full rounded-md bg-fb px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-fbdark disabled:cursor-not-allowed disabled:opacity-50"
       >
         {submitting ? "Confirming…" : `Pay ${amountLabel}`}
       </button>

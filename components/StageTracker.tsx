@@ -55,7 +55,7 @@ export function StageTracker({ currentStage }: StageTrackerProps) {
             <div
               key={stage.key}
               className={`h-1 flex-1 rounded-full transition-colors ${
-                reached ? "bg-ink" : "bg-line"
+                reached ? "bg-fb" : "bg-line"
               }`}
             />
           );

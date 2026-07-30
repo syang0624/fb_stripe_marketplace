@@ -28,7 +28,7 @@ export function CancelDealDialog({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink/20 p-4 animate-fadeIn">
-      <div className="w-full max-w-sm overflow-hidden rounded-lg border border-line bg-paper shadow-card">
+      <div className="w-full max-w-sm overflow-hidden rounded-lg bg-paper shadow-card">
         <div className="p-6">
           <h3 className="text-sm font-medium text-ink">Deal did not happen?</h3>
           <p className="mt-2 text-sm leading-relaxed text-ink/60">{detail}</p>
@@ -36,7 +36,7 @@ export function CancelDealDialog({
             <button
               onClick={onClose}
               disabled={busy}
-              className="flex-1 rounded-md border border-line px-3 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-mist disabled:opacity-50"
+              className="flex-1 rounded-md bg-steel px-3 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-line disabled:opacity-50"
             >
               Keep the deal
             </button>

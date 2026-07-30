@@ -36,17 +36,17 @@ export function BuyerDealStatus({
         <span className="h-1.5 w-1.5 rounded-full bg-positive" />
         Payment secured
       </p>
-      <h2 className="mt-3 text-center text-xl font-light tracking-tight text-ink">
+      <h2 className="mt-3 text-center text-xl font-semibold tracking-tight text-ink">
         {transaction.listingTitle}
       </h2>
-      <p className="mt-2 text-center text-3xl font-light tracking-tight text-ink">
+      <p className="mt-2 text-center text-3xl font-semibold tracking-tight text-ink">
         {formatUsd(transaction.amountCents)}
       </p>
       <p className="mt-1 text-center text-xs text-ink/40">
         paid — held until both sides confirm
       </p>
 
-      <div className="mt-8 rounded-lg border border-line bg-paper p-6">
+      <div className="mt-8 rounded-lg bg-paper shadow-card p-6">
         <dl className="space-y-2 text-sm">
           <div className="flex justify-between gap-6">
             <dt className="text-ink/40">Seller</dt>
@@ -101,14 +101,14 @@ export function BuyerDealStatus({
             <button
               onClick={onConfirm}
               disabled={actionsLocked || buyerConfirmed}
-              className="flex-1 rounded-md bg-ink px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-ink/90 disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex-1 rounded-md bg-fb px-4 py-2.5 text-sm font-medium text-white transition-colors hover:bg-fbdark disabled:cursor-not-allowed disabled:opacity-50"
             >
               {confirming ? "Confirming…" : buyerConfirmed ? "You confirmed" : "Confirm deal"}
             </button>
             <button
               onClick={onCancelRequest}
               disabled={actionsLocked}
-              className="flex-1 rounded-md border border-line px-4 py-2.5 text-sm font-medium text-ink/60 transition-colors hover:text-critical disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex-1 rounded-md bg-steel px-4 py-2.5 text-sm font-medium text-ink/60 transition-colors hover:text-critical disabled:cursor-not-allowed disabled:opacity-50"
             >
               Deal did not happen
             </button>

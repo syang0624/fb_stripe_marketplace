@@ -132,9 +132,9 @@ export async function checkForScam(
   const summary =
     llmResult?.summary ??
     (severity === "high"
-      ? "MRI detected strong scam indicators. Negotiation stopped to protect you."
+      ? "SOLID detected strong scam indicators. Negotiation stopped to protect you."
       : severity === "medium"
-        ? "MRI noticed some suspicious behavior from this seller. Proceed with caution."
+        ? "SOLID noticed some suspicious behavior from this seller. Proceed with caution."
         : "Minor red flags noted — likely fine, but stay alert.");
 
   return { severity, flags: uniqueFlags, summary, detectedAt: Date.now() };

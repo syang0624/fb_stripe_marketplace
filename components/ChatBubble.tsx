@@ -10,7 +10,7 @@ interface ChatBubbleProps {
 // agent_note and system render as quiet, centered annotations (no bubble) so the
 // buyer/seller exchange reads cleanly. The other roles use minimal surfaces.
 const bubbleByRole: Record<"buyer" | "seller" | "draft", string> = {
-  buyer: "ml-auto bg-ink text-white",
+  buyer: "ml-auto bg-fb text-white",
   seller: "mr-auto bg-mist text-ink",
   draft: "ml-auto border border-dashed border-line bg-paper text-ink"
 };
