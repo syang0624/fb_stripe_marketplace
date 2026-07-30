@@ -47,6 +47,45 @@ GMI_MODEL=nvidia/nemotron-3-ultra-550b-a55b
 SCRAPECREATORS_API_KEY=your-scrapecreators-api-key
 ```
 
+## Auth0
+
+The buyer app is protected by Auth0. It uses the Auth0 Next.js v4 SDK and
+automatically mounts login, logout, callback, profile, and access-token routes
+under `/auth/*`.
+
+Following the Stripe Projects workflow from the Auth0 tutorial:
+
+```bash
+stripe plugin install projects
+stripe projects init solid-marketplace
+stripe projects link auth0
+stripe projects add auth0/free
+stripe projects add auth0/client
+```
+
+Stripe Projects is currently a developer preview and requires an eligible
+Stripe account. Linking Auth0 is interactive and asks the account owner to
+accept Auth0's terms. If Stripe Projects cannot link the account, create a
+**Regular Web Application** in the Auth0 Dashboard and add these values to
+`.env.local`:
+
+```bash
+AUTH0_DOMAIN=your-tenant.us.auth0.com
+AUTH0_CLIENT_ID=your-client-id
+AUTH0_CLIENT_SECRET=your-client-secret
+AUTH0_SECRET=your-64-character-session-secret
+APP_BASE_URL=http://localhost:3000
+```
+
+Generate the session secret with `openssl rand -hex 32`. Configure the Auth0
+application with:
+
+- Allowed Callback URL: `http://localhost:3000/auth/callback`
+- Allowed Logout URL: `http://localhost:3000`
+- Allowed Web Origin: `http://localhost:3000`
+
+Restart the dev server after changing Auth0 environment variables.
+
 The app still runs without these keys:
 
 - Missing GMI config makes `/api/chat` use deterministic fallback responses.
@@ -68,6 +107,48 @@ Useful checks:
 npm run typecheck
 npm run build
 ```
+
+Payment backend checks:
+
+```bash
+npm run test:payments
+```
+
+## Stripe Connect Demo Backend
+
+The `nori` branch adds the server-side trusted meetup payment flow described in
+`STRIPE-CONNECT-PRD.md`:
+
+- the AI chat route registers a server-trusted final offer
+- the buyer creates a transaction and Stripe PaymentIntent
+- the seller completes Stripe-hosted Connect onboarding
+- buyer and seller confirmations are stored separately
+- the second confirmation creates a Connect Transfer
+- either party can cancel first and trigger a full Refund
+- Stripe webhooks are signature-verified and idempotently reconciled
+
+Copy the Stripe variables from `.env.example` into `.env.local`. For local
+webhook testing, forward Stripe events to:
+
+```text
+http://localhost:3000/api/stripe/webhook
+```
+
+With an authenticated Stripe CLI, the repository can configure and verify the
+local test environment without printing secrets:
+
+```bash
+npm run stripe:setup-local
+npm run stripe:verify
+npm run stripe:listen
+```
+
+The CLI login creates an expiring restricted test key. Re-run `stripe login`
+and `npm run stripe:setup-local` when that credential expires.
+
+Local payment state is stored in `.data/solid-payments.sqlite`. This is suitable
+for a single-process hackathon demo. Use managed Postgres before deploying to a
+serverless or multi-instance environment.
 
 `npm run lint` is defined, but this repo uses Next 15 with the older `next lint` script shape, so verify the lint setup before relying on it in CI.
 

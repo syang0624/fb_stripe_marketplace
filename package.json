@@ -7,14 +7,23 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "test:payments": "node --conditions=react-server --import tsx --test tests/paymentStore.test.ts",
+    "stripe:setup-local": "node scripts/configure-stripe-local.mjs",
+    "stripe:verify": "node scripts/verify-stripe-setup.mjs",
+    "stripe:listen": "stripe listen --events payment_intent.succeeded,payment_intent.payment_failed,payment_intent.canceled,refund.created,refund.updated,refund.failed,account.updated,transfer.created,transfer.updated,transfer.reversed --forward-to http://localhost:3000/api/stripe/webhook"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
-    "next": "^15.0.0",
+    "@auth0/nextjs-auth0": "^4.26.0",
+    "@stripe/react-stripe-js": "^6.8.0",
+    "@stripe/stripe-js": "^9.12.1",
+    "next": "^15.5.22",
     "openai": "^6.33.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "server-only": "^0.0.1",
+    "stripe": "^22.4.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.0",
@@ -25,6 +34,7 @@
     "eslint-config-next": "^15.0.0",
     "postcss": "^8.4.49",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.23.1",
     "typescript": "^5.7.0"
   }
 }

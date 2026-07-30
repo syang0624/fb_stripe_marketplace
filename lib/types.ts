@@ -179,6 +179,7 @@ export interface ChatRequest {
 
 export interface ChatResponse {
   reply: string;
+  offerId?: string;
 }
 
 // Structured payloads returned (inside `reply` JSON) by specific modes.

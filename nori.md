@@ -19,6 +19,27 @@ Build the trusted server-side transaction layer behind SOLID's existing negotiat
 
 Use Stripe test mode for the hackathon. Implement this as a Stripe Connect separate-charges-and-transfers flow, not as legal escrow.
 
+## Implementation Status
+
+Implemented on the `nori` branch:
+
+- canonical shared payment types
+- durable local SQLite transaction repository and audit tables
+- server-trusted final-offer registration from the AI negotiation route
+- idempotent transaction and PaymentIntent creation
+- buyer transaction read, confirm, and cancel APIs
+- seller transaction read, Connect onboarding, confirm, and cancel APIs
+- dual-confirmation Transfer and either-party Refund services
+- raw-body Stripe webhook verification and event reconciliation
+- timeout-refund scheduler endpoint
+- scoped buyer/seller deal tokens and public-response filtering
+- payment state-machine tests
+
+Still requires Stripe test credentials and dashboard setup before an end-to-end
+test can create real test PaymentIntent, Account, Transfer, and Refund objects.
+For a deployed/serverless demo, replace the local SQLite repository with managed
+Postgres while keeping the same service and API contracts.
+
 ## File Ownership
 
 Nori owns:
@@ -536,4 +557,3 @@ Nori's work is complete when:
 - transaction status survives refresh and server restart
 - server logs provide enough identifiers to demo and debug safely
 - backend tests, typecheck, and production build pass
-
