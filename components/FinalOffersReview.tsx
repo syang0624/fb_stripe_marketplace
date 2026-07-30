@@ -111,7 +111,7 @@ export function FinalOffersReview({
                       onClick={() => onAccept(neg)}
                       className="flex-1 rounded-md bg-ink px-3 py-2 text-xs font-medium text-white transition-colors hover:bg-ink/90"
                     >
-                      Accept
+                      Accept &amp; pay
                     </button>
                     <button
                       onClick={() => setModifyingSellerId(neg.sellerId)}

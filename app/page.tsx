@@ -6,10 +6,29 @@ import { FinalOffersReview } from "@/components/FinalOffersReview";
 import { NegotiationDashboard } from "@/components/NegotiationDashboard";
 import { OnboardingChat } from "@/components/OnboardingChat";
 import { SearchProgress } from "@/components/SearchProgress";
+import { BuyerDealStatus } from "@/components/payments/BuyerDealStatus";
+import { CancelDealDialog } from "@/components/payments/CancelDealDialog";
+import { CheckoutPanel } from "@/components/payments/CheckoutPanel";
+import { DemoHandoffPanel } from "@/components/payments/DemoHandoffPanel";
+import { PaymentStatus } from "@/components/payments/PaymentStatus";
+import { PaymentSummary } from "@/components/payments/PaymentSummary";
 import { fallbackListings, getSellerPersona } from "@/lib/data";
 import { findTopDeals } from "@/lib/searchAgent";
 import { BuyerProfile, Negotiation, RankedDeal } from "@/lib/types";
 import { checkForScam, shouldAutoStop } from "@/lib/scamDetection";
+import { formatUsd } from "@/lib/client/format";
+import {
+  ActiveTransactionRef,
+  PublicTransaction,
+  TransactionState
+} from "@/lib/client/transactionTypes";
+import {
+  clearActiveTransaction,
+  loadActiveTransaction,
+  saveActiveTransaction,
+  transactionsApi
+} from "@/lib/client/transactionsApi";
+import { useTransactionPolling } from "@/lib/client/useTransactionPolling";
 
 type Step = "onboarding" | "searching" | "deals" | "negotiate" | "review";
 
@@ -20,6 +39,48 @@ const STEP_LABELS: { key: Step; label: string }[] = [
   { key: "negotiate", label: "Negotiate" },
   { key: "review", label: "Review" }
 ];
+
+// Post-review flow steps appended to the progress nav once payment begins.
+const PAYMENT_NAV_STEPS: { key: string; label: string }[] = [
+  { key: "pay", label: "Pay" },
+  { key: "meetup", label: "Meetup" },
+  { key: "done", label: "Done" }
+];
+
+// Browser-side view of the post-negotiation flow. Local-only presentation
+// state — `transaction.state` from the server remains authoritative and is
+// what drives transitions between the server-backed views.
+type PaymentView =
+  | "summary"
+  | "creating_transaction"
+  | "checkout"
+  | "processing"
+  | "meetup"
+  | "complete"
+  | "refund"
+  | "error";
+
+function viewForState(state: TransactionState): PaymentView {
+  switch (state) {
+    case "draft":
+    case "payment_failed":
+      return "checkout";
+    case "payment_pending":
+      return "processing";
+    case "funded":
+    case "awaiting_confirmation":
+    case "release_queued":
+      return "meetup";
+    case "paid_to_seller":
+      return "complete";
+    case "refund_queued":
+    case "refunded":
+    case "canceled":
+      return "refund";
+    case "needs_attention":
+      return "error";
+  }
+}
 
 // Derive meet time/place from the buyer's stated preferences so the final offer
 // reflects their authority (meet windows + location + travel radius) rather than
@@ -42,11 +103,101 @@ export default function HomePage() {
   const [profile, setProfile] = useState<BuyerProfile | null>(null);
   const [deals, setDeals] = useState<RankedDeal[]>([]);
   const [negotiations, setNegotiations] = useState<Negotiation[]>([]);
-  const [accepted, setAccepted] = useState<Negotiation | null>(null);
   // Holds the in-flight live search so the progress animation can await it.
   const searchPromiseRef = useRef<Promise<RankedDeal[]> | null>(null);
   // True once the live search has actually resolved — gates the "complete" UI.
   const [searchReady, setSearchReady] = useState(false);
+
+  // --- Payment flow state (S1) -------------------------------------------
+  const [paymentView, setPaymentView] = useState<PaymentView | null>(null);
+  // The negotiation being paid for — only used pre-transaction (summary view).
+  const [pendingNeg, setPendingNeg] = useState<Negotiation | null>(null);
+  // Persisted pointer {id, buyerToken, sellerUrl}; the only local durable state.
+  const [activeTx, setActiveTx] = useState<ActiveTransactionRef | null>(null);
+  const [transaction, setTransaction] = useState<PublicTransaction | null>(null);
+  const [clientSecret, setClientSecret] = useState<string | null>(null);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [flowError, setFlowError] = useState<string | null>(null);
+  const [confirming, setConfirming] = useState(false);
+  const [canceling, setCanceling] = useState(false);
+  const [cancelOpen, setCancelOpen] = useState(false);
+  const latestTxRef = useRef<PublicTransaction | null>(null);
+
+  const paymentFlowActive = paymentView !== null || activeTx !== null;
+
+  // Accept a fresh server transaction and derive the view from its state.
+  const applyTransaction = useCallback((tx: PublicTransaction) => {
+    const prev = latestTxRef.current;
+    if (
+      prev &&
+      prev.id === tx.id &&
+      new Date(prev.updatedAt).getTime() > new Date(tx.updatedAt).getTime()
+    ) {
+      return; // stale read — a newer snapshot already applied
+    }
+    latestTxRef.current = tx;
+    setTransaction(tx);
+    if (tx.state === "payment_failed") {
+      setCheckoutError(
+        (msg) => msg ?? "Your payment didn't go through. You haven't been charged — try again."
+      );
+    }
+    setPaymentView((prevView) => {
+      // Local-only views advance explicitly, not from polling.
+      if (prevView === "summary" || prevView === "creating_transaction") return prevView;
+      const next = viewForState(tx.state);
+      // A poll that raced the card confirmation may still say "draft" — never
+      // fall back from processing unless the payment actually failed.
+      if (prevView === "processing" && next === "checkout" && tx.state !== "payment_failed") {
+        return prevView;
+      }
+      return next;
+    });
+  }, []);
+
+  // Restore an active transaction after refresh (S1). Server state decides
+  // which screen the buyer lands on.
+  useEffect(() => {
+    const ref = loadActiveTransaction();
+    if (ref) setActiveTx(ref);
+  }, []);
+
+  const buyerFetcher = useCallback(() => {
+    if (!activeTx) return Promise.reject(new Error("no active transaction"));
+    return transactionsApi
+      .getTransaction(activeTx.transactionId, activeTx.buyerToken)
+      .then((r) => r.transaction);
+  }, [activeTx]);
+
+  const polling = useTransactionPolling(activeTx ? buyerFetcher : null);
+
+  useEffect(() => {
+    if (polling.transaction) applyTransaction(polling.transaction);
+  }, [polling.transaction, applyTransaction]);
+
+  // Start or resume checkout: fetch the client secret whenever we're on the
+  // checkout view without one.
+  useEffect(() => {
+    if (paymentView !== "checkout" || !activeTx || clientSecret) return;
+    let disposed = false;
+    transactionsApi
+      .createPaymentIntent(activeTx.transactionId)
+      .then((res) => {
+        if (disposed) return;
+        setClientSecret(res.clientSecret);
+        applyTransaction(res.transaction);
+      })
+      .catch((error) => {
+        if (disposed) return;
+        setFlowError(
+          error instanceof Error ? error.message : "Could not start checkout"
+        );
+        setPaymentView("error");
+      });
+    return () => {
+      disposed = true;
+    };
+  }, [paymentView, activeTx, clientSecret, applyTransaction]);
 
   // Auto-advance to review when all negotiations are terminal
   useEffect(() => {
@@ -369,8 +520,107 @@ export default function HomePage() {
     }
   };
 
+  // --- Payment flow handlers (S2–S6) -------------------------------------
+
+  // "Accept & pay": show the final payment summary before creating anything.
   const handleAccept = (neg: Negotiation) => {
-    setAccepted(neg);
+    setPendingNeg(neg);
+    setPaymentView("summary");
+  };
+
+  const handleBackToReview = () => {
+    setPendingNeg(null);
+    setPaymentView(null);
+  };
+
+  // Create the transaction and move to checkout. The server derives the
+  // amount from trusted state — the seed object below feeds the mock adapter
+  // only and is ignored by the real API.
+  const handleConfirmAndPay = async () => {
+    const offer = pendingNeg?.finalOffer;
+    if (!pendingNeg || !offer) return;
+    setPaymentView("creating_transaction");
+    try {
+      const res = await transactionsApi.createTransaction(pendingNeg.sellerId, {
+        listingTitle: offer.bikeTitle || pendingNeg.listing.title,
+        sellerDisplayName: pendingNeg.sellerName,
+        amountCents: Math.round(offer.finalPrice * 100),
+        meetTime: offer.meetTime,
+        meetPlace: offer.meetPlace
+      });
+      const ref: ActiveTransactionRef = {
+        transactionId: res.transaction.id,
+        buyerToken: res.buyerToken,
+        sellerUrl: res.sellerUrl
+      };
+      saveActiveTransaction(ref);
+      latestTxRef.current = res.transaction;
+      setTransaction(res.transaction);
+      setActiveTx(ref);
+      setPendingNeg(null);
+      setPaymentView("checkout");
+    } catch (error) {
+      setFlowError(
+        error instanceof Error ? error.message : "Could not set up the transaction"
+      );
+      setPaymentView("error");
+    }
+  };
+
+  const handleBuyerConfirm = async () => {
+    if (!activeTx || confirming) return;
+    setConfirming(true);
+    try {
+      const res = await transactionsApi.confirmTransaction(
+        activeTx.transactionId,
+        activeTx.buyerToken
+      );
+      applyTransaction(res.transaction);
+    } catch (error) {
+      setFlowError(error instanceof Error ? error.message : "Could not confirm");
+    } finally {
+      setConfirming(false);
+    }
+  };
+
+  const handleBuyerCancel = async () => {
+    if (!activeTx || canceling) return;
+    setCanceling(true);
+    try {
+      const res = await transactionsApi.cancelTransaction(
+        activeTx.transactionId,
+        activeTx.buyerToken
+      );
+      applyTransaction(res.transaction);
+      setCancelOpen(false);
+    } catch (error) {
+      setFlowError(error instanceof Error ? error.message : "Could not cancel");
+      setCancelOpen(false);
+    } finally {
+      setCanceling(false);
+    }
+  };
+
+  // Full reset after a terminal state — clears the stored pointer and starts
+  // a fresh buying session.
+  const handleStartNew = () => {
+    clearActiveTransaction();
+    latestTxRef.current = null;
+    setActiveTx(null);
+    setTransaction(null);
+    setClientSecret(null);
+    setPaymentView(null);
+    setPendingNeg(null);
+    setCheckoutError(null);
+    setFlowError(null);
+    setConfirming(false);
+    setCanceling(false);
+    setCancelOpen(false);
+    setNegotiations([]);
+    setDeals([]);
+    setProfile(null);
+    setSearchReady(false);
+    setStep("onboarding");
   };
 
   const handleDecline = (neg: Negotiation) => {
@@ -423,7 +673,23 @@ export default function HomePage() {
     runNegotiationLoop(reopened);
   };
 
-  const activeIndex = STEP_LABELS.findIndex((x) => x.key === step);
+  // --- Progress nav -------------------------------------------------------
+  const navItems: { key: string; label: string }[] = paymentFlowActive
+    ? [...STEP_LABELS, ...PAYMENT_NAV_STEPS]
+    : STEP_LABELS;
+  const activeNavKey = paymentFlowActive
+    ? paymentView === "meetup"
+      ? "meetup"
+      : paymentView === "complete" || paymentView === "refund"
+        ? "done"
+        : "pay"
+    : step;
+  const activeNavIndex = navItems.findIndex((x) => x.key === activeNavKey);
+
+  // Demo seller link is shown from transaction creation through the meetup.
+  const showHandoffPanel =
+    activeTx !== null &&
+    (paymentView === "checkout" || paymentView === "processing" || paymentView === "meetup");
 
   return (
     <main className="min-h-screen bg-paper">
@@ -431,65 +697,203 @@ export default function HomePage() {
       <header className="border-b border-line">
         <div className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
           <span className="text-base font-semibold tracking-tight text-ink">MRI</span>
-          {!accepted && (
-            <nav className="flex items-center gap-1">
-              {STEP_LABELS.map((s, i) => (
-                <div key={s.key} className="flex items-center gap-1">
-                  <span
-                    className={`text-xs font-medium transition-colors ${
-                      step === s.key ? "text-ink" : i < activeIndex ? "text-ink/40" : "text-ink/25"
-                    }`}
-                  >
-                    {s.label}
-                  </span>
-                  {i < STEP_LABELS.length - 1 && (
-                    <span className="px-1 text-ink/20">·</span>
-                  )}
-                </div>
-              ))}
-            </nav>
-          )}
+          <nav className="flex items-center gap-1">
+            {navItems.map((s, i) => (
+              <div key={s.key} className="flex items-center gap-1">
+                <span
+                  className={`text-xs font-medium transition-colors ${
+                    activeNavKey === s.key
+                      ? "text-ink"
+                      : i < activeNavIndex
+                        ? "text-ink/40"
+                        : "text-ink/25"
+                  }`}
+                >
+                  {s.label}
+                </span>
+                {i < navItems.length - 1 && <span className="px-1 text-ink/20">·</span>}
+              </div>
+            ))}
+          </nav>
         </div>
       </header>
 
       <div className="py-10">
-        {/* Accepted state */}
-        {accepted && (
-          <div className="mx-auto max-w-lg px-6 py-16 text-center animate-fadeIn">
-            <p className="text-xs font-medium uppercase tracking-widest text-ink/40">
-              Deal accepted
-            </p>
-            <h2 className="mt-4 text-xl font-light tracking-tight text-ink">
-              {accepted.listing.title}
-            </h2>
-            <p className="mt-6 text-5xl font-light tracking-tight text-ink">
-              ${accepted.finalOffer?.finalPrice ?? accepted.currentPrice}
-            </p>
-            {accepted.finalOffer && (
-              <p className="mt-6 text-sm text-ink/50">
-                Meet {accepted.finalOffer.meetTime} at {accepted.finalOffer.meetPlace}
+        {/* ---- Payment flow (post-review) ---- */}
+        {paymentFlowActive && (
+          <div className="mx-auto max-w-lg px-6">
+            {polling.networkIssue && (
+              <p className="mb-6 rounded-md border border-line bg-mist px-4 py-2.5 text-center text-xs text-ink/60">
+                Connection issue — retrying. This says nothing about your payment;
+                the status shown is the last one confirmed by the server.
               </p>
             )}
-            <p className="mt-10 text-sm text-ink/40">
-              MRI turned a vague buying request into a real deal.
-            </p>
+
+            {paymentView === "summary" && pendingNeg && (
+              <PaymentSummary
+                negotiation={pendingNeg}
+                busy={false}
+                onConfirm={handleConfirmAndPay}
+                onBack={handleBackToReview}
+              />
+            )}
+
+            {paymentView === "creating_transaction" && (
+              <PaymentStatus
+                title="Setting up your secure payment…"
+                detail="Creating the transaction and locking in the agreed price."
+                waiting
+              />
+            )}
+
+            {paymentView === "checkout" && transaction && (
+              <CheckoutPanel
+                transaction={transaction}
+                clientSecret={clientSecret}
+                errorMessage={checkoutError}
+                onClientConfirmed={() => {
+                  setCheckoutError(null);
+                  setPaymentView("processing");
+                }}
+                onFailure={(message) => setCheckoutError(message)}
+              />
+            )}
+
+            {paymentView === "processing" && (
+              <PaymentStatus
+                title="Confirming your payment…"
+                detail="Waiting for the payment to be confirmed server-side. This usually takes a few seconds."
+                waiting
+              />
+            )}
+
+            {paymentView === "meetup" && transaction && (
+              <BuyerDealStatus
+                transaction={transaction}
+                confirming={confirming}
+                canceling={canceling}
+                onConfirm={handleBuyerConfirm}
+                onCancelRequest={() => setCancelOpen(true)}
+              />
+            )}
+
+            {paymentView === "complete" && transaction && (
+              <PaymentStatus
+                title="Deal complete — payment released to seller"
+                detail={`${transaction.listingTitle} · ${formatUsd(transaction.amountCents)} paid to ${transaction.sellerDisplayName}.`}
+                tone="positive"
+              >
+                <button
+                  onClick={handleStartNew}
+                  className="rounded-md border border-line px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-mist"
+                >
+                  Start a new search
+                </button>
+              </PaymentStatus>
+            )}
+
+            {paymentView === "refund" &&
+              transaction &&
+              (transaction.state === "refunded" ? (
+                <PaymentStatus
+                  title="Refunded"
+                  detail={`The full ${formatUsd(transaction.amountCents)} payment has been refunded to your original payment method.`}
+                  tone="positive"
+                >
+                  <button
+                    onClick={handleStartNew}
+                    className="rounded-md border border-line px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-mist"
+                  >
+                    Start a new search
+                  </button>
+                </PaymentStatus>
+              ) : transaction.state === "canceled" ? (
+                <PaymentStatus
+                  title="Deal canceled"
+                  detail="This deal was canceled before payment — nothing was charged."
+                >
+                  <button
+                    onClick={handleStartNew}
+                    className="rounded-md border border-line px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-mist"
+                  >
+                    Start a new search
+                  </button>
+                </PaymentStatus>
+              ) : (
+                <PaymentStatus
+                  title="Full refund initiated"
+                  detail={`The full ${formatUsd(transaction.amountCents)} payment is being refunded to your original payment method.`}
+                  waiting
+                />
+              ))}
+
+            {paymentView === "error" && (
+              <PaymentStatus
+                title="This deal needs a quick check"
+                detail={
+                  flowError ??
+                  "Something on our side needs a manual look. Your payment is safe — refresh to get the latest status."
+                }
+              >
+                <div className="flex justify-center gap-2">
+                  {activeTx ? (
+                    <button
+                      onClick={polling.refresh}
+                      className="rounded-md border border-line px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-mist"
+                    >
+                      Refresh status
+                    </button>
+                  ) : (
+                    <button
+                      onClick={handleBackToReview}
+                      className="rounded-md border border-line px-4 py-2 text-xs font-medium text-ink transition-colors hover:bg-mist"
+                    >
+                      Back to offers
+                    </button>
+                  )}
+                </div>
+              </PaymentStatus>
+            )}
+
+            {/* Restoring after refresh — waiting for the first server read */}
+            {paymentView === null && activeTx && (
+              <PaymentStatus
+                title="Restoring your deal…"
+                detail="Fetching the latest status from the server."
+                waiting
+              />
+            )}
+
+            {showHandoffPanel && activeTx && (
+              <DemoHandoffPanel sellerUrl={activeTx.sellerUrl} />
+            )}
+
+            {cancelOpen && transaction && (
+              <CancelDealDialog
+                amountLabel={formatUsd(transaction.amountCents)}
+                perspective="buyer"
+                busy={canceling}
+                onConfirm={handleBuyerCancel}
+                onClose={() => setCancelOpen(false)}
+              />
+            )}
           </div>
         )}
 
-        {/* Steps */}
-        {!accepted && step === "onboarding" && (
+        {/* ---- Pre-payment steps ---- */}
+        {!paymentFlowActive && step === "onboarding" && (
           <OnboardingChat onComplete={handleProfileDone} />
         )}
 
-        {!accepted && step === "searching" && (
+        {!paymentFlowActive && step === "searching" && (
           <SearchProgress ready={searchReady} onComplete={handleSearchComplete} />
         )}
 
-        {!accepted && step === "deals" && (
+        {!paymentFlowActive && step === "deals" && (
           <DealCards deals={deals} onSelect={handleStartNegotiation} />
         )}
 
-        {!accepted && step === "negotiate" && profile && (
+        {!paymentFlowActive && step === "negotiate" && profile && (
           <NegotiationDashboard
             negotiations={negotiations}
             profile={profile}
@@ -498,7 +902,7 @@ export default function HomePage() {
           />
         )}
 
-        {!accepted && step === "review" && (
+        {!paymentFlowActive && step === "review" && (
           <FinalOffersReview
             negotiations={negotiations}
             onAccept={handleAccept}
