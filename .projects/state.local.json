@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "project": {
+    "catalog": "prod",
+    "initializedAt": "2026-07-30T23:49:01.375Z",
+    "merchantDisplayName": "Global Launchers",
+    "merchantId": "acct_1TVSDtFY3Uf8i2xq",
+    "projectId": "project_61V8ReXJW0vs6EPFr16UeqBFIIHNM4oEO8uJ1M1F2HLs",
+    "projectName": "solid-marketplace"
+  },
+  "providers": {
+    "auth0": {
+      "accountRequestId": "facctrq_61V8RgzTJlUo4WXN516UeqBFIIHNM4oEO8uJ1M1F2XWa",
+      "configuration": {
+        "locality": "us",
+        "naming_prefix": "solid-marketplace"
+      },
+      "linkedAt": "2026-07-30T23:51:38.817Z",
+      "providerId": "prvdr_61UVctyxfLOj4FpVw5Bmi",
+      "providerName": "Auth0",
+      "redirectUrl": null,
+      "requestedAt": "2026-07-30T23:51:38.817Z",
+      "status": "complete"
+    }
+  },
+  "resources": {
+    "auth0-client": {
+      "configuration": {
+        "name": "solid-marketplace",
+        "description": "SOLID Marketplace local web application",
+        "app_type": "regular_web",
+        "callbacks": [
+          "http://localhost:3000/auth/callback"
+        ],
+        "allowed_logout_urls": [
+          "http://localhost:3000"
+        ],
+        "web_origins": [
+          "http://localhost:3000"
+        ],
+        "grant_types": [
+          "authorization_code",
+          "refresh_token"
+        ],
+        "token_endpoint_auth_method": "client_secret_post",
+        "oidc_conformant": true
+      },
+      "createdAt": "2026-07-30T23:51:47.770Z",
+      "lastRevealedAt": "2026-07-30T23:57:24.691Z",
+      "lastStatus": "complete",
+      "name": "auth0-client",
+      "providerId": "prvdr_61UVctyxfLOj4FpVw5Bmi",
+      "providerName": "Auth0",
+      "resourceId": "fres_61V8Rh9x0xD9H2Zcj16UeqBFIIHNM4oEO8uJ1M1F2Adk",
+      "serviceId": "client"
+    },
+    "auth0-plan": {
+      "configuration": {},
+      "createdAt": "2026-07-30T23:51:42.155Z",
+      "lastRevealedAt": "2026-07-30T23:51:42.399Z",
+      "lastStatus": "complete",
+      "name": "auth0-plan",
+      "providerId": "prvdr_61UVctyxfLOj4FpVw5Bmi",
+      "providerName": "Auth0",
+      "resourceId": "fres_61V8Rh54XIgY2DVUA16UeqBFIIHNM4oEO8uJ1M1F2GaW",
+      "serviceId": "free"
+    }
+  },
+  "managedProjectVariableEnvKeys": {
+    ".env": [
+      "APP_BASE_URL",
+      "AUTH0_SECRET",
+      "OPENAI_API_KEY",
+      "OPENAI_MODEL"
+    ]
+  }
+}
