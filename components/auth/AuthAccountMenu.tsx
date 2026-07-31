@@ -1,3 +1,5 @@
+import { clearActiveTransaction } from "@/lib/client/transactionsApi";
+
 function initials(value: string): string {
   return value
     .split(/\s+/)
@@ -7,7 +9,13 @@ function initials(value: string): string {
     .join("");
 }
 
-export function AuthAccountMenu({ label }: { label: string }) {
+export function AuthAccountMenu({
+  accountId,
+  label,
+}: {
+  accountId: string;
+  label: string;
+}) {
   return (
     <div className="ml-4 flex items-center gap-2 border-l border-line pl-4">
       <span
@@ -20,6 +28,7 @@ export function AuthAccountMenu({ label }: { label: string }) {
         <p className="max-w-32 truncate text-xs font-medium text-ink">{label}</p>
         <a
           href="/auth/logout"
+          onClick={() => clearActiveTransaction(accountId)}
           className="text-[11px] text-ink/50 transition-colors hover:text-ink"
         >
           Sign out

@@ -37,5 +37,10 @@ export default async function HomePage() {
 
   const accountLabel = session.user.name || session.user.email || "Account";
 
-  return <MarketplaceApp accountLabel={accountLabel} />;
+  return (
+    <MarketplaceApp
+      accountId={session.user.sub}
+      accountLabel={accountLabel}
+    />
+  );
 }

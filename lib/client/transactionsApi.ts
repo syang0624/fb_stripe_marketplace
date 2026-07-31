@@ -1,18 +1,11 @@
-// Single adapter boundary between the frontend and Nori's transaction API.
-// All payment/transaction traffic goes through `transactionsApi` — production
-// components never talk to a mock directly.
-//
-// CURRENT BINDING: mockTransactionsApi (Nori's routes don't exist yet).
-// AT SYNC 2: flip the export at the bottom to `realTransactionsApi`, verify the
-// route paths below against Nori's implementation, and delete the mock before
-// the final demo build.
+// Single adapter boundary between the frontend and the transaction API.
+// All payment/transaction traffic goes through `transactionsApi`.
 
 import {
   ActiveTransactionRef,
   PublicTransaction
 } from "@/lib/client/transactionTypes";
 import { TransactionApiError } from "@/lib/client/apiError";
-import { mockTransactionsApi } from "@/lib/client/mockTransactionsApi";
 
 export { TransactionApiError, isNetworkError } from "@/lib/client/apiError";
 
@@ -44,7 +37,10 @@ export interface TransactionsApi {
     negotiationId: string,
     mockSeed?: MockTransactionSeed
   ): Promise<CreateTransactionResponse>;
-  createPaymentIntent(transactionId: string): Promise<PaymentIntentResponse>;
+  createPaymentIntent(
+    transactionId: string,
+    buyerToken: string
+  ): Promise<PaymentIntentResponse>;
   getTransaction(
     transactionId: string,
     buyerToken: string
@@ -81,17 +77,16 @@ async function request<T>(path: string, init?: RequestInit): Promise<T> {
   return (await resp.json()) as T;
 }
 
-// Real implementation of the contract in steven.md. Route paths and response
-// envelopes must be re-verified against Nori's routes at Sync 1.
 export const realTransactionsApi: TransactionsApi = {
   createTransaction: (negotiationId) =>
     request("/api/transactions", {
       method: "POST",
       body: JSON.stringify({ negotiationId })
     }),
-  createPaymentIntent: (transactionId) =>
+  createPaymentIntent: (transactionId, buyerToken) =>
     request(`/api/transactions/${transactionId}/payment-intent`, {
-      method: "POST"
+      method: "POST",
+      body: JSON.stringify({ token: buyerToken })
     }),
   getTransaction: (transactionId, buyerToken) =>
     request(
@@ -123,9 +118,7 @@ export const realTransactionsApi: TransactionsApi = {
     })
 };
 
-// SWAP POINT (Sync 2): change to `realTransactionsApi` once Nori's routes are
-// live, then remove the mock module before the final demo build.
-export const transactionsApi: TransactionsApi = mockTransactionsApi;
+export const transactionsApi: TransactionsApi = realTransactionsApi;
 
 // ---------------------------------------------------------------------------
 // Active-transaction persistence (S1: restore after refresh). Stores only the
@@ -133,16 +126,36 @@ export const transactionsApi: TransactionsApi = mockTransactionsApi;
 // authoritative and is re-fetched on load.
 // ---------------------------------------------------------------------------
 
-const ACTIVE_TX_KEY = "solid.activeTransaction.v1";
+const ACTIVE_TX_KEY_PREFIX = "solid.activeTransaction.v3";
+const LEGACY_ACTIVE_TX_KEYS = [
+  "solid.activeTransaction.v1",
+  "solid.activeTransaction.v2",
+];
 
-export function saveActiveTransaction(ref: ActiveTransactionRef): void {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(ACTIVE_TX_KEY, JSON.stringify(ref));
+function activeTransactionKey(accountId: string): string {
+  return `${ACTIVE_TX_KEY_PREFIX}:${encodeURIComponent(accountId)}`;
 }
 
-export function loadActiveTransaction(): ActiveTransactionRef | null {
+function clearLegacyActiveTransactions(): void {
+  for (const key of LEGACY_ACTIVE_TX_KEYS) {
+    window.localStorage.removeItem(key);
+  }
+}
+
+export function saveActiveTransaction(
+  accountId: string,
+  ref: ActiveTransactionRef
+): void {
+  if (typeof window === "undefined") return;
+  clearLegacyActiveTransactions();
+  window.localStorage.setItem(activeTransactionKey(accountId), JSON.stringify(ref));
+}
+
+export function loadActiveTransaction(accountId: string): ActiveTransactionRef | null {
   if (typeof window === "undefined") return null;
-  const raw = window.localStorage.getItem(ACTIVE_TX_KEY);
+  clearLegacyActiveTransactions();
+  const key = activeTransactionKey(accountId);
+  const raw = window.localStorage.getItem(key);
   if (!raw) return null;
   try {
     const parsed = JSON.parse(raw) as Partial<ActiveTransactionRef>;
@@ -152,11 +165,12 @@ export function loadActiveTransaction(): ActiveTransactionRef | null {
   } catch {
     // corrupted pointer — treat as absent
   }
-  window.localStorage.removeItem(ACTIVE_TX_KEY);
+  window.localStorage.removeItem(key);
   return null;
 }
 
-export function clearActiveTransaction(): void {
+export function clearActiveTransaction(accountId: string): void {
   if (typeof window === "undefined") return;
-  window.localStorage.removeItem(ACTIVE_TX_KEY);
+  clearLegacyActiveTransactions();
+  window.localStorage.removeItem(activeTransactionKey(accountId));
 }

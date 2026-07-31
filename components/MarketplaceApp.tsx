@@ -64,10 +64,9 @@ type PaymentView =
 function viewForState(state: TransactionState): PaymentView {
   switch (state) {
     case "draft":
+    case "payment_pending":
     case "payment_failed":
       return "checkout";
-    case "payment_pending":
-      return "processing";
     case "funded":
     case "awaiting_confirmation":
     case "release_queued":
@@ -99,7 +98,13 @@ function deriveMeetDetails(profile: BuyerProfile | null): {
   return { meetTime, meetPlace };
 }
 
-export function MarketplaceApp({ accountLabel }: { accountLabel: string }) {
+export function MarketplaceApp({
+  accountId,
+  accountLabel,
+}: {
+  accountId: string;
+  accountLabel: string;
+}) {
   const [step, setStep] = useState<Step>("onboarding");
   const [profile, setProfile] = useState<BuyerProfile | null>(null);
   const [deals, setDeals] = useState<RankedDeal[]>([]);
@@ -159,9 +164,9 @@ export function MarketplaceApp({ accountLabel }: { accountLabel: string }) {
   // Restore an active transaction after refresh (S1). Server state decides
   // which screen the buyer lands on.
   useEffect(() => {
-    const ref = loadActiveTransaction();
+    const ref = loadActiveTransaction(accountId);
     if (ref) setActiveTx(ref);
-  }, []);
+  }, [accountId]);
 
   const buyerFetcher = useCallback(() => {
     if (!activeTx) return Promise.reject(new Error("no active transaction"));
@@ -182,7 +187,7 @@ export function MarketplaceApp({ accountLabel }: { accountLabel: string }) {
     if (paymentView !== "checkout" || !activeTx || clientSecret) return;
     let disposed = false;
     transactionsApi
-      .createPaymentIntent(activeTx.transactionId)
+      .createPaymentIntent(activeTx.transactionId, activeTx.buyerToken)
       .then((res) => {
         if (disposed) return;
         setClientSecret(res.clientSecret);
@@ -554,7 +559,7 @@ export function MarketplaceApp({ accountLabel }: { accountLabel: string }) {
         buyerToken: res.buyerToken,
         sellerUrl: res.sellerUrl
       };
-      saveActiveTransaction(ref);
+      saveActiveTransaction(accountId, ref);
       latestTxRef.current = res.transaction;
       setTransaction(res.transaction);
       setActiveTx(ref);
@@ -605,7 +610,7 @@ export function MarketplaceApp({ accountLabel }: { accountLabel: string }) {
   // Full reset after a terminal state — clears the stored pointer and starts
   // a fresh buying session.
   const handleStartNew = () => {
-    clearActiveTransaction();
+    clearActiveTransaction(accountId);
     latestTxRef.current = null;
     setActiveTx(null);
     setTransaction(null);
@@ -724,7 +729,7 @@ export function MarketplaceApp({ accountLabel }: { accountLabel: string }) {
                 </div>
               ))}
             </nav>
-            <AuthAccountMenu label={accountLabel} />
+            <AuthAccountMenu accountId={accountId} label={accountLabel} />
           </div>
         </div>
       </header>

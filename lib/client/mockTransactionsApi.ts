@@ -254,7 +254,7 @@ export const mockTransactionsApi: TransactionsApi = {
     };
   },
 
-  async createPaymentIntent(transactionId) {
+  async createPaymentIntent(transactionId, _buyerToken) {
     const rec = await withRecord(byId(transactionId), (r) => {
       assertState(
         r.tx,
