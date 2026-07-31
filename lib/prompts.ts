@@ -1,6 +1,6 @@
 // MRI v3 — system prompts for every /api/chat mode.
 // Each builder returns the system prompt string; the route prepends it to the
-// caller's `messages` before calling Nemotron on GMI Cloud.
+// caller's `messages` before calling OpenAI.
 
 import {
   BuyerProfile,

@@ -2,7 +2,7 @@
 // deals via: query planning → multi-query live search → dedupe → normalize →
 // cheap pre-score → item enrichment → hybrid (deterministic + LLM) rank.
 //
-// Runs in the browser. Talks to /api/chat (Nemotron) and the /api/marketplace
+// Runs in the browser. Talks to /api/chat (OpenAI) and the /api/marketplace
 // proxy routes through lib/marketplace helpers. Falls back to seeded listings
 // (N15) if live search yields nothing or errors out.
 

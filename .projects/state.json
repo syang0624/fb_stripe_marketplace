@@ -16,5 +16,54 @@
       "providerName": "Auth0",
       "serviceId": "free"
     }
+  },
+  "environments": {
+    "default": {
+      "output": ".env",
+      "resources": [
+        {
+          "resourceName": "auth0-client"
+        },
+        {
+          "resourceName": "auth0-plan"
+        }
+      ],
+      "variables": [
+        {
+          "variableName": "app-base-url",
+          "envKey": "APP_BASE_URL"
+        },
+        {
+          "variableName": "auth0-session-secret",
+          "envKey": "AUTH0_SECRET"
+        },
+        {
+          "variableName": "openai-api-key",
+          "envKey": "OPENAI_API_KEY"
+        },
+        {
+          "variableName": "openai-model",
+          "envKey": "OPENAI_MODEL"
+        }
+      ]
+    }
+  },
+  "variables": {
+    "app-base-url": {
+      "name": "app-base-url",
+      "backendId": "fprjvar_61V8RmoAQl1qRvGmI16UeqBFIIHNM4oEO8uJ1M1F2Imu"
+    },
+    "auth0-session-secret": {
+      "name": "auth0-session-secret",
+      "backendId": "fprjvar_61V8Rml6TYWcbSzuj16UeqBFIIHNM4oEO8uJ1M1F22Fk"
+    },
+    "openai-api-key": {
+      "name": "openai-api-key",
+      "backendId": "fprjvar_61V8RxD5fqnuFKGKZ16UeqBFIIHNM4oEO8uJ1M1F22cy"
+    },
+    "openai-model": {
+      "name": "openai-model",
+      "backendId": "fprjvar_61V8RqN5dqNygWPBV16UeqBFIIHNM4oEO8uJ1M1F2CbQ"
+    }
   }
 }

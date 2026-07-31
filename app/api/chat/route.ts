@@ -1,7 +1,7 @@
 // MRI v3 — single mode-switched chat route.
-// All inference goes through NVIDIA Nemotron 3 Ultra on GMI Cloud via the
-// OpenAI-compatible chat completions API. If no key is configured (or the call
-// fails), we return a deterministic fallback so local dev + the demo survive.
+// All inference goes through OpenAI's Chat Completions API. If no key is
+// configured (or the call fails), we return a deterministic fallback so local
+// dev + the demo survive.
 
 import OpenAI from "openai";
 import {
@@ -42,16 +42,11 @@ interface ChatRequestBody {
   };
 }
 
-const MODEL = process.env.GMI_MODEL || "nvidia/nemotron-3-ultra-550b-a55b";
+const MODEL = process.env.OPENAI_MODEL || "gpt-5.6-sol";
 
-// GMI Cloud Model Hub is OpenAI-compatible. Base URL gets `/v1` appended.
-const client =
-  process.env.GMI_API_KEY && process.env.GMI_API_BASE_URL
-    ? new OpenAI({
-        baseURL: `${process.env.GMI_API_BASE_URL}/v1`,
-        apiKey: process.env.GMI_API_KEY,
-      })
-    : null;
+const client = process.env.OPENAI_API_KEY
+  ? new OpenAI({ apiKey: process.env.OPENAI_API_KEY })
+  : null;
 
 export async function POST(req: Request) {
   const body = (await req.json()) as ChatRequestBody;
@@ -125,7 +120,8 @@ export async function POST(req: Request) {
   try {
     const response = await client.chat.completions.create({
       model: MODEL,
-      max_tokens: 1000,
+      max_completion_tokens: 1000,
+      reasoning_effort: "none",
       temperature,
       messages: [
         { role: "system", content: systemPrompt },
@@ -135,7 +131,7 @@ export async function POST(req: Request) {
     const text = response.choices[0]?.message?.content || "";
     return responseWithTrustedOffer(mode, text, context);
   } catch (err) {
-    console.error("[/api/chat] GMI call failed, using fallback:", err);
+    console.error("[/api/chat] OpenAI call failed, using fallback:", err);
     const reply = fallbackReply(mode, context, messages);
     return responseWithTrustedOffer(mode, reply, context);
   }
@@ -173,7 +169,7 @@ function normalizeMessages(
   }));
 }
 
-// Deterministic fallbacks so the demo never hard-fails without GMI keys.
+// Deterministic fallbacks so the demo never hard-fails without an OpenAI key.
 function fallbackReply(
   mode: ChatMode,
   context?: ChatRequestBody["context"],
